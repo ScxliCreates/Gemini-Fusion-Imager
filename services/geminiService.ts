@@ -1,8 +1,6 @@
 import { GoogleGenAI, Modality, Part } from "@google/genai";
 import { ImageFile } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const proModel = 'gemini-2.5-pro';
 const flashImageModel = 'gemini-2.5-flash-image';
 
@@ -27,6 +25,7 @@ const fileToGenerativePart = (image: ImageFile): Part => {
 };
 
 export const generatePlan = async (prompt: string, image?: ImageFile): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const parts: Part[] = [
         { text: `You are part of a duo of AI models. Your partner is a visual generation specialist, ${flashImageModel}. Analyze the following user prompt and image (if provided). Collaboratively create an extremely detailed and comprehensive plan for generating a new image. Leverage Google Search for grounding and context. Structure the plan with clear, actionable steps for your visual partner to follow. User Prompt: "${prompt}"` }
     ];
@@ -47,6 +46,7 @@ export const generatePlan = async (prompt: string, image?: ImageFile): Promise<s
 };
 
 export const generateDraft = async (plan: string, originalImage?: ImageFile): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const parts: Part[] = [
         { text: `Based on the following detailed plan, generate a new image. If an original image is provided, use it as a base for editing. Plan: ${plan}` }
     ];
@@ -71,6 +71,7 @@ export const generateDraft = async (plan: string, originalImage?: ImageFile): Pr
 };
 
 export const generateAnalysis = async (prompt: string, plan: string, draftImage: ImageFile, originalImage?: ImageFile): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const parts: Part[] = [
         { text: `You are part of a duo of AI models. Your partner is a visual generation specialist. You previously created a 'Plan'. Your partner has now created a 'Draft' image based on that plan.
         Original User Prompt: "${prompt}"
@@ -97,6 +98,7 @@ export const generateAnalysis = async (prompt: string, plan: string, draftImage:
 
 
 export const generateFinalImage = async (analysis: string, draftImage: ImageFile, originalImage?: ImageFile): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const parts: Part[] = [
         { text: `Based on the following comprehensive analysis, refine the provided draft image to create a final, polished version. If an original image is also provided, it is for context. The draft image is the primary one to be edited. Analysis: ${analysis}` },
         { text: "Draft Image to Refine:"},
