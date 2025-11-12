@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Fusion Imager",
+  "description": "An advanced image generation tool that uses a collaborative multi-step process with Gemini Pro and Flash models to plan, draft, analyze, and refine images from user prompts.",
+  "requestFramePermissions": []
+}
