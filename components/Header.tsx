@@ -21,10 +21,11 @@ const Header: React.FC<HeaderProps> = ({ apiKey, setApiKey }) => {
             </summary>
             <div className="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-800 text-sm text-slate-400 max-w-md w-full space-y-4">
               <ol className="list-decimal list-inside space-y-3">
-                <li><strong className="font-medium text-slate-200">Plan:</strong> AI architects create a detailed plan from your prompt.</li>
-                <li><strong className="font-medium text-slate-200">Draft:</strong> An AI artist drafts an initial image based on the plan.</li>
-                <li><strong className="font-medium text-slate-200">Analysis:</strong> AI critics analyze the draft for potential improvements.</li>
-                <li><strong className="font-medium text-slate-200">Refinement:</strong> The AI artist refines the image into a final masterpiece.</li>
+                <li><strong className="font-medium text-slate-200">First Draft:</strong> An AI artist generates an initial image for immediate feedback.</li>
+                <li><strong className="font-medium text-slate-200">Plan:</strong> AI architects create a detailed plan for a more refined version.</li>
+                <li><strong className="font-medium text-slate-200">Refined Draft:</strong> The artist drafts a new image based on the comprehensive plan.</li>
+                <li><strong className="font-medium text-slate-200">Analysis:</strong> AI critics analyze the refined draft for potential improvements.</li>
+                <li><strong className="font-medium text-slate-200">Final Image:</strong> The artist refines the image into a final masterpiece.</li>
               </ol>
               <div className="border-t border-slate-700/50 pt-4">
                 <label htmlFor="api-key-input" className="block text-sm font-medium text-slate-300 mb-2">Your API Key</label>

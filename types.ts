@@ -1,6 +1,7 @@
 
 export enum WorkflowStatus {
   IDLE,
+  QUICK_DRAFTING,
   PLANNING,
   DRAFTING,
   ANALYZING,
