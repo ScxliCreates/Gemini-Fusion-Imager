@@ -1,7 +1,12 @@
 import React from 'react';
 import { InfoIcon } from './icons';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  apiKey: string;
+  setApiKey: (key: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ apiKey, setApiKey }) => {
   return (
     <header className="w-full max-w-5xl mx-auto py-6 md:py-8">
       <div className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-4 shadow-2xl shadow-sky-900/10 border border-slate-800">
@@ -14,13 +19,25 @@ const Header: React.FC = () => {
               <InfoIcon className="w-5 h-5" />
               How it works
             </summary>
-            <div className="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-800 text-sm text-slate-400 max-w-md w-full">
+            <div className="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-800 text-sm text-slate-400 max-w-md w-full space-y-4">
               <ol className="list-decimal list-inside space-y-3">
                 <li><strong className="font-medium text-slate-200">Plan:</strong> AI architects create a detailed plan from your prompt.</li>
                 <li><strong className="font-medium text-slate-200">Draft:</strong> An AI artist drafts an initial image based on the plan.</li>
                 <li><strong className="font-medium text-slate-200">Analysis:</strong> AI critics analyze the draft for potential improvements.</li>
                 <li><strong className="font-medium text-slate-200">Refinement:</strong> The AI artist refines the image into a final masterpiece.</li>
               </ol>
+              <div className="border-t border-slate-700/50 pt-4">
+                <label htmlFor="api-key-input" className="block text-sm font-medium text-slate-300 mb-2">Your API Key</label>
+                <input
+                  id="api-key-input"
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="Enter your API Key"
+                  className="w-full p-2 bg-slate-800 border border-slate-700 rounded-md focus:ring-1 focus:ring-sky-500 focus:border-sky-500 transition-all duration-300 text-slate-200 placeholder-slate-500"
+                />
+                <p className="text-xs text-slate-500 mt-2">If left blank, the key from the environment will be used automatically.</p>
+              </div>
             </div>
           </details>
         </div>

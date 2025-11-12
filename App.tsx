@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [workflowStatus, setWorkflowStatus] = useState<WorkflowStatus>(WorkflowStatus.IDLE);
   const [prompt, setPrompt] = useState<string>('');
   const [originalImage, setOriginalImage] = useState<ImageFile | undefined>(undefined);
+  const [apiKey, setApiKey] = useState<string>('');
   
   const [plan, setPlan] = useState<string | null>(null);
   const [draftImage, setDraftImage] = useState<ImageFile | null>(null);
@@ -38,23 +39,23 @@ const App: React.FC = () => {
     try {
       // Step 1: Plan
       setWorkflowStatus(WorkflowStatus.PLANNING);
-      const generatedPlan = await geminiService.generatePlan(userPrompt, userImage);
+      const generatedPlan = await geminiService.generatePlan(userPrompt, apiKey, userImage);
       setPlan(generatedPlan);
 
       // Step 2: Draft
       setWorkflowStatus(WorkflowStatus.DRAFTING);
-      const generatedDraftBase64 = await geminiService.generateDraft(generatedPlan, userImage);
+      const generatedDraftBase64 = await geminiService.generateDraft(generatedPlan, apiKey, userImage);
       const draftImageFile = { base64: generatedDraftBase64, mimeType: 'image/png' };
       setDraftImage(draftImageFile);
 
       // Step 3: Analysis
       setWorkflowStatus(WorkflowStatus.ANALYZING);
-      const generatedAnalysis = await geminiService.generateAnalysis(userPrompt, generatedPlan, draftImageFile, userImage);
+      const generatedAnalysis = await geminiService.generateAnalysis(userPrompt, generatedPlan, draftImageFile, apiKey, userImage);
       setAnalysis(generatedAnalysis);
 
       // Step 4: Refinement
       setWorkflowStatus(WorkflowStatus.REFINING);
-      const finalImageBase64 = await geminiService.generateFinalImage(generatedAnalysis, draftImageFile, userImage);
+      const finalImageBase64 = await geminiService.generateFinalImage(generatedAnalysis, draftImageFile, apiKey, userImage);
       const finalImageFile = { base64: finalImageBase64, mimeType: 'image/png' };
       setFinalImage(finalImageFile);
 
@@ -65,14 +66,14 @@ const App: React.FC = () => {
       setError(e instanceof Error ? e.message : "An unknown error occurred.");
       setWorkflowStatus(WorkflowStatus.ERROR);
     }
-  }, []);
+  }, [apiKey]);
   
   const isLoading = workflowStatus > WorkflowStatus.IDLE && workflowStatus < WorkflowStatus.COMPLETED;
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
       <main className="container mx-auto pb-12 px-4">
-        <Header />
+        <Header apiKey={apiKey} setApiKey={setApiKey} />
         <UserInput onGenerate={handleGenerate} isLoading={isLoading} />
         
         <div className="mt-8 space-y-6">
