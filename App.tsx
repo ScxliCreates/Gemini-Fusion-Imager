@@ -68,13 +68,32 @@ const App: React.FC = () => {
     }
   }, [apiKey]);
   
+  const handleQuickGenerate = useCallback(async (userPrompt: string, userImage?: ImageFile) => {
+    resetState();
+    setPrompt(userPrompt);
+    setOriginalImage(userImage);
+
+    try {
+      setWorkflowStatus(WorkflowStatus.DRAFTING); // Use a loading status
+      const quickImageBase64 = await geminiService.quickGenerate(userPrompt, apiKey, userImage);
+      const quickImageFile = { base64: quickImageBase64, mimeType: 'image/png' };
+      setFinalImage(quickImageFile);
+      setWorkflowStatus(WorkflowStatus.COMPLETED);
+    } catch (e) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : "An unknown error occurred.");
+      setWorkflowStatus(WorkflowStatus.ERROR);
+    }
+  }, [apiKey]);
+
   const isLoading = workflowStatus > WorkflowStatus.IDLE && workflowStatus < WorkflowStatus.COMPLETED;
+  const isQuickGenerateResult = finalImage && !plan;
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
       <main className="container mx-auto pb-12 px-4">
         <Header apiKey={apiKey} setApiKey={setApiKey} />
-        <UserInput onGenerate={handleGenerate} isLoading={isLoading} />
+        <UserInput onGenerate={handleGenerate} onQuickGenerate={handleQuickGenerate} isLoading={isLoading} />
         
         <div className="mt-8 space-y-6">
             {error && (
@@ -90,27 +109,37 @@ const App: React.FC = () => {
             )}
 
             {plan && (
-              <WorkflowStep title="1. The Plan" status={workflowStatus > WorkflowStatus.PLANNING ? 'complete' : 'in-progress'}>
-                <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{plan}</p>
-              </WorkflowStep>
+              <>
+                <WorkflowStep title="1. The Plan" status={workflowStatus > WorkflowStatus.PLANNING ? 'complete' : 'in-progress'}>
+                  <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{plan}</p>
+                </WorkflowStep>
+
+                {draftImage && (
+                  <WorkflowStep title="2. The Draft" status={workflowStatus > WorkflowStatus.DRAFTING ? 'complete' : 'in-progress'}>
+                    <div className="max-w-md mx-auto">
+                        <ImageDisplay imageBase64={draftImage.base64} />
+                    </div>
+                  </WorkflowStep>
+                )}
+
+                {analysis && (
+                  <WorkflowStep title="3. The Analysis" status={workflowStatus > WorkflowStatus.ANALYZING ? 'complete' : 'in-progress'}>
+                    <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{analysis}</p>
+                  </WorkflowStep>
+                )}
+
+                {finalImage && (
+                  <WorkflowStep title="4. The Final Image" status={workflowStatus >= WorkflowStatus.COMPLETED ? 'complete' : 'in-progress'}>
+                    <div className="max-w-md mx-auto">
+                        <ImageDisplay imageBase64={finalImage.base64} />
+                    </div>
+                  </WorkflowStep>
+                )}
+              </>
             )}
 
-            {draftImage && (
-              <WorkflowStep title="2. The Draft" status={workflowStatus > WorkflowStatus.DRAFTING ? 'complete' : 'in-progress'}>
-                 <div className="max-w-md mx-auto">
-                    <ImageDisplay imageBase64={draftImage.base64} />
-                 </div>
-              </WorkflowStep>
-            )}
-
-            {analysis && (
-              <WorkflowStep title="3. The Analysis" status={workflowStatus > WorkflowStatus.ANALYZING ? 'complete' : 'in-progress'}>
-                 <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{analysis}</p>
-              </WorkflowStep>
-            )}
-
-            {finalImage && (
-              <WorkflowStep title="4. The Final Image" status={workflowStatus >= WorkflowStatus.COMPLETED ? 'complete' : 'in-progress'}>
+            {isQuickGenerateResult && (
+              <WorkflowStep title="Quick Generation Result" status={'complete'}>
                  <div className="max-w-md mx-auto">
                     <ImageDisplay imageBase64={finalImage.base64} />
                  </div>

@@ -133,3 +133,27 @@ export const generateFinalImage = async (analysis: string, draftImage: ImageFile
     }
     throw new Error("Could not generate the final image.");
 };
+
+export const quickGenerate = async (prompt: string, apiKey: string, image?: ImageFile): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: getApiKey(apiKey) });
+    const parts: Part[] = [{ text: prompt }];
+
+    if (image) {
+        parts.push(fileToGenerativePart(image));
+    }
+
+    const response = await ai.models.generateContent({
+        model: flashImageModel,
+        contents: { parts },
+        config: {
+            ...flashImageConfig,
+            responseModalities: [Modality.IMAGE],
+        },
+    });
+    
+    const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
+    if (imagePart && imagePart.inlineData) {
+        return imagePart.inlineData.data;
+    }
+    throw new Error("Could not generate a quick image.");
+};

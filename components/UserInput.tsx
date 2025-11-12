@@ -4,6 +4,7 @@ import { UploadIcon, SparklesIcon, FileIcon, TrashIcon } from './icons';
 
 interface UserInputProps {
   onGenerate: (prompt: string, image?: ImageFile) => void;
+  onQuickGenerate: (prompt: string, image?: ImageFile) => void;
   isLoading: boolean;
 }
 
@@ -23,7 +24,7 @@ const fileToImageFile = (file: File): Promise<ImageFile> => {
   });
 };
 
-const UserInput: React.FC<UserInputProps> = ({ onGenerate, isLoading }) => {
+const UserInput: React.FC<UserInputProps> = ({ onGenerate, onQuickGenerate, isLoading }) => {
   const [prompt, setPrompt] = useState<string>('');
   const [imageFile, setImageFile] = useState<ImageFile | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -57,6 +58,12 @@ const UserInput: React.FC<UserInputProps> = ({ onGenerate, isLoading }) => {
     e.preventDefault();
     if (prompt.trim()) {
       onGenerate(prompt, imageFile);
+    }
+  };
+
+  const handleQuickGenerate = () => {
+    if (prompt.trim()) {
+        onQuickGenerate(prompt, imageFile);
     }
   };
 
@@ -94,14 +101,24 @@ const UserInput: React.FC<UserInputProps> = ({ onGenerate, isLoading }) => {
                 </label>
             )}
 
-            <button
-              type="submit"
-              disabled={isLoading || !prompt.trim()}
-              className="w-full h-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-sky-500"
-            >
-              <SparklesIcon className="w-5 h-5" />
-              {isLoading ? 'Generating...' : 'Start Fusion'}
-            </button>
+            <div className="flex flex-col-reverse sm:flex-row gap-4">
+                <button
+                    type="button"
+                    onClick={handleQuickGenerate}
+                    disabled={isLoading || !prompt.trim()}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-4 bg-slate-700 text-slate-200 font-semibold rounded-lg shadow-lg hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                    Quick Generate
+                </button>
+                <button
+                    type="submit"
+                    disabled={isLoading || !prompt.trim()}
+                    className="w-full flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-sky-500"
+                >
+                    <SparklesIcon className="w-5 h-5" />
+                    {isLoading ? 'Generating...' : 'Start Fusion'}
+                </button>
+            </div>
         </div>
       </form>
     </div>
